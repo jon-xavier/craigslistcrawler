@@ -1,0 +1,6 @@
+*.pyc
+*.json
+*.csv
+.project
+.pydevproject
+.settings/
