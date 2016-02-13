@@ -14,5 +14,5 @@ class CraigslistscraperItem(scrapy.Item):
     
     name = scrapy.Field()
     url = scrapy.Field()
-    post_body = scrapy.Field()
+    
     
