@@ -14,11 +14,14 @@ from scrapy.linkextractors import LinkExtractor
 
 import urlparse
 
+import string
+
+
 #from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 
 
 
-keys = ['marketing', 'journalism', 'journalist', 'copywriting', 'communications', 'copywriter']
+keys = ['marketing', 'journalism', 'journalist', 'copywriting', 'communications', 'copywriter', 'content']
 
 
 
@@ -65,13 +68,19 @@ class JobsFinder(CrawlSpider):
     # Rule = 
 
 
-
+            
+            
+        
     def parse(self, response):
 
-        item = CraigslistscraperItem()
-
-        hxs = Selector(response)
-
+        def parsejobpage(response):
+            postingurl=response.url
+            postingtitle = response.selector.xpath('//span[@class="postingtitletext"]/span[@id="titletextonly"]/text()').extract()[0]
+            postingbody = ''.join(response.selector.xpath('//section[@id="postingbody"]//text()').extract()).encode('ascii', 'ignore')
+            filename = filter(lambda x: x == ' ' or x.isalpha(), postingtitle)
+            with open("./jobpages/" + filename, "w") as output_file:
+                output_file.write(postingtitle + " " + postingurl + "\n" + postingbody)
+                
         print response.meta, '\n', response
         
         url = response.url
@@ -81,8 +90,10 @@ class JobsFinder(CrawlSpider):
             return
         
         current_type = url_to_type[url]
-        
-        if current_type not in selectorConfig:
+        if current_type == 2:
+            parsejobpage(response)
+            return
+        if current_type not in selectorConfig:            
             with open('craigslist-jobs.txt', 'a') as output_file:
                 output_file.write(response.body)
                 return
@@ -97,4 +108,3 @@ class JobsFinder(CrawlSpider):
                 url_to_type[link] = page_type
                 print link 
                 yield scrapy.Request(link, callback = self.parse)
-
