@@ -16,14 +16,16 @@ import urlparse
 
 import string
 
+from datetime import date, timedelta
+
 
 #from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 
 
 
-keys = ['marketing', 'journalism', 'journalist', 'copywriting', 'communications', 'copywriter', 'content']
+keys = ['marketing', 'journalism', 'journalist', 'copywriting', 'communications', 'copywriter', 'content', 'writer']
 
-
+yesterday = date.today() - timedelta(days=1)
 
 targetdepth = 1
 
@@ -77,9 +79,13 @@ class JobsFinder(CrawlSpider):
             postingurl=response.url
             postingtitle = response.selector.xpath('//span[@class="postingtitletext"]/span[@id="titletextonly"]/text()').extract()[0]
             postingbody = ''.join(response.selector.xpath('//section[@id="postingbody"]//text()').extract()).encode('ascii', 'ignore')
+            postingdate = 
             filename = filter(lambda x: x == ' ' or x.isalpha(), postingtitle)
-            with open("./jobpages/" + filename, "w") as output_file:
-                output_file.write(postingtitle + " " + postingurl + "\n" + postingbody)
+            
+            if postingdate > yesterday:
+                if key in postingbody or postingtitle for key in keys:
+                    with open("./jobpages/" + filename, "w") as output_file:
+                        output_file.write(postingtitle + " " + postingurl + "\n" + postingbody)
                 
         print response.meta, '\n', response
         
